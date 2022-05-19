@@ -1,5 +1,6 @@
 package com.example.myapplication;
 
+import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,16 @@ public class ListSiswaAdapter extends RecyclerView.Adapter<ListSiswaAdapter.View
 
     private ArrayList<Siswa> listSiswa;
 
+    private int position;
+
+    public int getPosition() {
+        return position;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
+    }
+
     public ListSiswaAdapter(ArrayList<Siswa> listSiswa) {
         this.listSiswa = listSiswa;
     }
@@ -27,12 +38,21 @@ public class ListSiswaAdapter extends RecyclerView.Adapter<ListSiswaAdapter.View
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ListSiswaAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ListSiswaAdapter.ViewHolder holder, @SuppressLint("RecyclerView") final int position) {
 
         Siswa siswa = listSiswa.get(position);
 
         holder.imgPhoto.setImageResource(siswa.getFoto());
         holder.tvName.setText(siswa.getNama());
+        // add this below
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                setPosition(position);
+                holder.itemView.showContextMenu();
+                return true;
+            }
+        });
 
 
     }
@@ -53,5 +73,6 @@ public class ListSiswaAdapter extends RecyclerView.Adapter<ListSiswaAdapter.View
 
         }
     }
+
 
 }
