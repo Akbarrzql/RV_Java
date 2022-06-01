@@ -1,19 +1,24 @@
 package com.example.myapplication;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.Image;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
 
     private RecyclerView  recyclerViewSiwa;
     private TextView textViewrv;
+    private Button btnAdd;
     private final ArrayList<Siswa> list = new ArrayList<>();
 
 
@@ -34,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerViewSiwa = findViewById(R.id.recyclerView);
         textViewrv = findViewById(R.id.textRv);
+        btnAdd = findViewById(R.id.btn_data);
         recyclerViewSiwa.setHasFixedSize(true);
         registerForContextMenu(recyclerViewSiwa);
 
@@ -42,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
         list.addAll(SiswaData.getListData());
         showRecyclerList();
+        addData();
 
 //        Cara Ke 1
         recyclerViewSiwa.addOnItemTouchListener( new RecyclerItemClickListener(this, recyclerViewSiwa ,new RecyclerItemClickListener.OnItemClickListener() {
@@ -55,22 +63,19 @@ public class MainActivity extends AppCompatActivity {
                 })
         );
 
-        /*
-        Cara ke 2
-        recyclerViewSiwa.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Activity activity = (Activity) view.getContext();
-                Intent intent = new Intent(activity, DetailSiswaActivity.class);
-//                intent.putExtra("NAMA_SISWA", list.get(0).getNama());
-//                intent.putExtra("FOTO_SISWA", list.get(0).getFoto());
-                intent.putExtra("NAMA_SISWA", list.get(recyclerViewSiwa.getChildAdapterPosition(view)).getNama());
-                intent.putExtra("FOTO_SISWA", list.get(recyclerViewSiwa.getChildAdapterPosition(view)).getFoto());
-                activity.startActivity(intent);
-            }
-        });
 
-        */
+        recyclerViewSiwa.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                if (newState == RecyclerView.SCROLL_STATE_IDLE){
+                    btnAdd.setVisibility(View.VISIBLE);
+                }else {
+                    btnAdd.setVisibility(View.INVISIBLE);
+                }
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+        });
 
     }
 
@@ -134,6 +139,44 @@ public class MainActivity extends AppCompatActivity {
 
         AlertDialog alert = builder.create();
         alert.show();
+    }
+
+    public void addData(){
+        btnAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Dialog dialog = new Dialog(MainActivity.this);
+                dialog.setContentView(R.layout.diaolag_add_data);
+
+                EditText editText = dialog.findViewById(R.id.edt_nama);
+                Button button = dialog.findViewById(R.id.button_save);
+                Button button1 = dialog.findViewById(R.id.button_cancel);
+
+                button1.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String nama = editText.getText().toString();
+                        if (nama.isEmpty()){
+                            Toast.makeText(MainActivity.this, "Nama tidak boleh kosong", Toast.LENGTH_SHORT).show();
+                        }else {
+                            list.add(new Siswa());
+                            list.get(list.size()-1).setNama(nama);
+                            list.get(list.size()-1).setFoto(R.drawable.android);
+                            recyclerViewSiwa.getAdapter().notifyDataSetChanged();
+                            dialog.dismiss();
+                        }
+                    }
+                });
+                dialog.show();
+            }
+        });
     }
 
     public void removeItem(int position) {

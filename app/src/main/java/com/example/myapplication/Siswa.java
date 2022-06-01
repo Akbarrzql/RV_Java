@@ -1,8 +1,10 @@
 package com.example.myapplication;
 
 public class Siswa {
+
     private String nama;
     private int foto;
+
 
 
     public String getNama() {

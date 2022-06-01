@@ -48,6 +48,8 @@ public class SiswaData {
     };
 
 
+
+
     @NonNull
     static ArrayList<Siswa> getListData(){
         ArrayList<Siswa> list = new ArrayList<>();
